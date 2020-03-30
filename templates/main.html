@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{%  block body %}
+    <form style="margin-left: 43%;margin-top: 5%" method="POST" action="/city">
+            {% csrf_token %}
+            <div style="">
+                <input class="input100" type="text" name="city" required style="width: 250px;" >
+                <span class="focus-input200" data-placeholder="Enter Your City"></span>
+            </div>
+
+            <div style="padding-top: 20px;padding-left: 75px;">
+                <button class="btn btn-primary btn-lg" style="border-radius: 5px;background-color: aqua;color: black">
+                    Add City
+                </button>
+            </div>
+        </form>
+
+{% endblock %}
