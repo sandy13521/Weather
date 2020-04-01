@@ -1,17 +1,27 @@
 {% extends 'base.html' %}
 {%  block body %}
-    <form style="margin-left: 43%;margin-top: 5%" method="POST" action="/city">
-            {% csrf_token %}
-            <div style="">
-                <input class="input100" type="text" name="city" required style="width: 250px;" >
-                <span class="focus-input200" data-placeholder="Enter Your City"></span>
-            </div>
 
-            <div style="padding-top: 20px;padding-left: 75px;">
-                <button class="btn btn-primary btn-lg" style="border-radius: 5px;background-color: aqua;color: black">
-                    Add City
-                </button>
+    <section class="section">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-offset-4 is-4">
+                    <form method="POST" action="city">
+                        {% csrf_token %}
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input class="input" type="text" placeholder="City Name" name="city">
+                            </div>
+                            <div class="control">
+                                <button class="button is-info">
+                                    Add City
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
             </div>
-        </form>
+        </div>
+    </section>
 
 {% endblock %}
