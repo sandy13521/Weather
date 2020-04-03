@@ -1,48 +1,54 @@
 import requests
-from django.shortcuts import render
-from pyrebase import pyrebase
-import json
-from django.http import JsonResponse
-
-
-firebaseConfig = {
-    'apiKey': "AIzaSyCfLdUa2Gh65xTO_q1ESs30bWrlASdjAw0",
-    'authDomain': "weather-247ba.firebaseapp.com",
-    'databaseURL': "https://weather-247ba.firebaseio.com",
-    'projectId': "weather-247ba",
-    'storageBucket': "weather-247ba.appspot.com",
-    'messagingSenderId': "312320080238",
-    'appId': "1:312320080238:web:cc15e634870f55bbc6297f",
-    'measurementId': "G-M23C5E9BWH"
-}
-
-firebase = pyrebase.initialize_app(firebaseConfig)
-auth = firebase.auth()
-
-
-# Home Page
-def home(request):
-    return render(request, 'main.html')
-
+from django.shortcuts import render, redirect
+from .models import city
+from django.contrib import messages
 
 # Getting City Weather Report By Using Api
 def city_weather(request):
-    # api key
-    api_key = "bc94bea8e06b9bc36a7e9c46b6cda681"
-    # api url
-    base_url = "https://api.openweathermap.org/data/2.5/weather?q="
 
-    if request.method == 'POST':
-        city = request.POST['city']
-        response = requests.get(base_url +  'LasVegas&units=metric&appid=' + api_key)
+    #Url with api ky and city
+    url = 'https://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=bc94bea8e06b9bc36a7e9c46b6cda681'
+    if request.method == 'POST' :
+        city_requested = request.POST['city']
+        print(city.objects.filter(name = city_requested).count())
+        err_msg = ""
+        if city.objects.filter(name = city_requested).count() == 0 :
+            r = requests.get(url.format(city_requested))
+            report = r.json()
+            if report['cod'] == 200:
+                city_name = city()
+                city_name.name = city_requested
+                city_name.save()
+            else:
+                err_msg = "Invalid City Entered!!"
+                messages.error(request,err_msg)
+        else:
+            err_msg = "City Is Already Exists."
+            messages.error(request, err_msg)
+
+        if err_msg == "":
+            messages.success(request,"City is Succssfully Added.")
+
+
+    weather_data = []
+    cities = city.objects.all()
+    for city_name in cities:
+        response = requests.get(url.format(city_name))
         report = response.json()
-
-        print(report)
         City_Weather = {
-            'City' : report['name'],
-            'Temperature' : report['main']['temp'],
-            'Description' : report['weather'][0]['description'],
-            'Icon' : report['weather'][0]['icon']
+            'City': report['name'],
+            'Temperature': report['main']['temp'],
+            'Description': report['weather'][0]['description'],
+            'Icon': report['weather'][0]['icon']
         }
-        return render(request, 'report.html', {"city_weather": City_Weather})
-        #return JsonResponse(City_Weather,safe=False)
+        weather_data.append(City_Weather)
+    return render(request, 'report.html', {"weather_data": weather_data})
+
+
+# Method to Delete City From Database
+def delete(request,city_name):
+    try:
+        city.objects.get(name = city_name).delete()
+    finally:
+        return redirect('/city')
+
