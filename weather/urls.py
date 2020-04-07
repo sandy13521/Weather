@@ -4,6 +4,7 @@ from WeatherApp.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('city',city_weather),
-    path('delete/<city_name>',delete)
+    path('city', city_weather_report),
+    path('delete/<city_name>', delete),
+    path('refresh/<city_name>', refresh)
 ]
