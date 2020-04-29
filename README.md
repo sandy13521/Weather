@@ -1,7 +1,7 @@
 # Weather
 A web application which provides weather report of the cities you would like to view using API and django
 
-
+![](WeatherApp/static/screenshot_of_page.png)
 
 Features -
 1. New cities can be added and cities can be removed.
